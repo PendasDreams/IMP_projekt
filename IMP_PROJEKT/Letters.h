@@ -1,14 +1,26 @@
 #ifndef __LETTERS_H__
 #define __LETTERS_H__
 
-#define HEIGHT 8
 #define WIDTH 8
+#define HEIGHT 8
 #define MAX 64
+
 
 
 void fillField(int fieldLength, char field[HEIGHT][MAX], char template[HEIGHT][WIDTH]);
 
+
 void add_Space(char field[HEIGHT][MAX], int curr_field_length);
+void add_0(char field[HEIGHT][MAX], int curr_field_length);
+void add_1(char field[HEIGHT][MAX], int curr_field_length);
+void add_2(char field[HEIGHT][MAX], int curr_field_length);
+void add_3(char field[HEIGHT][MAX], int curr_field_length);
+void add_4(char field[HEIGHT][MAX], int curr_field_length);
+void add_5(char field[HEIGHT][MAX], int curr_field_length);
+void add_6(char field[HEIGHT][MAX], int curr_field_length);
+void add_7(char field[HEIGHT][MAX], int curr_field_length);
+void add_8(char field[HEIGHT][MAX], int curr_field_length);
+void add_9(char field[HEIGHT][MAX], int curr_field_length);
 void add_A(char field[HEIGHT][MAX], int curr_field_length);
 void add_B(char field[HEIGHT][MAX], int curr_field_length);
 void add_C(char field[HEIGHT][MAX], int curr_field_length);
@@ -35,15 +47,5 @@ void add_W(char field[HEIGHT][MAX], int curr_field_length);
 void add_X(char field[HEIGHT][MAX], int curr_field_length);
 void add_Y(char field[HEIGHT][MAX], int curr_field_length);
 void add_Z(char field[HEIGHT][MAX], int curr_field_length);
-void add_0(char field[HEIGHT][MAX], int curr_field_length);
-void add_1(char field[HEIGHT][MAX], int curr_field_length);
-void add_2(char field[HEIGHT][MAX], int curr_field_length);
-void add_3(char field[HEIGHT][MAX], int curr_field_length);
-void add_4(char field[HEIGHT][MAX], int curr_field_length);
-void add_5(char field[HEIGHT][MAX], int curr_field_length);
-void add_6(char field[HEIGHT][MAX], int curr_field_length);
-void add_7(char field[HEIGHT][MAX], int curr_field_length);
-void add_8(char field[HEIGHT][MAX], int curr_field_length);
-void add_9(char field[HEIGHT][MAX], int curr_field_length);
 
 #endif

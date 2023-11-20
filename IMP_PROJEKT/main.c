@@ -95,7 +95,7 @@ void column_select(unsigned int col_num)
 
 
 void row_select(unsigned int rowNum) {
-    // Pole pro hodnoty jednotlivých pinů
+    // Array for values of individual pins
     uint32_t rowValues[] = {
         GPIO_PIN(26),  // R0
         GPIO_PIN(24),  // R1
@@ -107,28 +107,32 @@ void row_select(unsigned int rowNum) {
         GPIO_PIN(29)   // R7
     };
 
-    // Zkontrolujte, zda rowNum nevychází mimo rozsah
+    // Check if rowNum is within the valid range
     if (rowNum >= 0 && rowNum < sizeof(rowValues) / sizeof(rowValues[0])) {
-        // Nastavte všechny piny na LOW
+        // Set all pins to LOW
         for (int i = 0; i < sizeof(rowValues) / sizeof(rowValues[0]); i++) {
             PTA->PDOR &= ~rowValues[i];
         }
 
-        // Nastavte odpovídající pin na HIGH
+        // Set the corresponding pin to HIGH
         PTA->PDOR |= rowValues[rowNum];
     }
 }
 
 
 
+
 void select_spot(unsigned int x, unsigned int y)
 {
-	if (x >= 0 && x < BOTH_DISPLAYS && y >= 0 && y < BOTH_DISPLAYS) {
-		column_select(x);
-		row_select(y);
-	}
+    // Check if the x and y coordinates are within the valid range for the displays.
+    if (x >= 0 && x < BOTH_DISPLAYS && y >= 0 && y < BOTH_DISPLAYS) {
+        // If the coordinates are valid, select the corresponding column and row.
+        column_select(x);
+        row_select(y);
+    }
 
-	delay(tdelay1, tdelay2);
+    // Introduce a delay with parameters tdelay1 and tdelay2.
+    delay(tdelay1, tdelay2);
 }
 
 void clear()
@@ -138,48 +142,55 @@ void clear()
 
 void showField(char field[HEIGHT][MAX], int length, int z)
 {
+    // Iterate through the columns of the field.
     for (int x = 0; x < length; x++) {
+        // Iterate through the rows of the field.
         for (int y = 0; y < HEIGHT; y++) {
+            // Calculate the column and row based on the offset 'z', current 'x', and 'y'.
             int column = z - 7 - x;
             int row = 7 - y;
 
+            // Check if the current cell in the field contains '1'.
             if (field[y][x] == '1') {
+                // Call a function to select and display a spot on the screen at the calculated column and row.
                 select_spot(column, row);
             }
         }
     }
 
+    // Clear the screen after displaying the field.
     clear();
 }
 
 void createString(char field[HEIGHT][MAX], char* str, int strLength)
 {
-	int fieldLength = 0;
+    int fieldLength = 0;
 
-	// Tabulka pro mapování znaků na funkce
-	void (*charToFunc[256])(char[HEIGHT][MAX], int) = {
-		[' '] = add_Space, ['A'] = add_A, ['B'] = add_B, ['C'] = add_C, ['D'] = add_D,
-		['E'] = add_E, ['F'] = add_F, ['G'] = add_G, ['H'] = add_H, ['I'] = add_I,
-		['J'] = add_J, ['K'] = add_K, ['L'] = add_L, ['M'] = add_M, ['N'] = add_N,
-		['O'] = add_O, ['P'] = add_P, ['Q'] = add_Q, ['R'] = add_R, ['S'] = add_S,
-		['T'] = add_T, ['U'] = add_U, ['V'] = add_V, ['W'] = add_W, ['X'] = add_X,
-		['Y'] = add_Y, ['Z'] = add_Z, ['0'] = add_0, ['1'] = add_1, ['2'] = add_2,
-		['3'] = add_3, ['4'] = add_4, ['5'] = add_5, ['6'] = add_6, ['7'] = add_7,
-		['8'] = add_8, ['9'] = add_9,
-	};
+    // Table for mapping characters to functions
+    void (*charToFunc[256])(char[HEIGHT][MAX], int) = {
+        [' '] = add_Space, ['A'] = add_A, ['B'] = add_B, ['C'] = add_C, ['D'] = add_D,
+        ['E'] = add_E, ['F'] = add_F, ['G'] = add_G, ['H'] = add_H, ['I'] = add_I,
+        ['J'] = add_J, ['K'] = add_K, ['L'] = add_L, ['M'] = add_M, ['N'] = add_N,
+        ['O'] = add_O, ['P'] = add_P, ['Q'] = add_Q, ['R'] = add_R, ['S'] = add_S,
+        ['T'] = add_T, ['U'] = add_U, ['V'] = add_V, ['W'] = add_W, ['X'] = add_X,
+        ['Y'] = add_Y, ['Z'] = add_Z, ['0'] = add_0, ['1'] = add_1, ['2'] = add_2,
+        ['3'] = add_3, ['4'] = add_4, ['5'] = add_5, ['6'] = add_6, ['7'] = add_7,
+        ['8'] = add_8, ['9'] = add_9,
+    };
 
-	for (int i = 0; i < strLength; i++) {
-		// Získání odpovídající funkce pro znak z tabulky
-		void (*func)(char[HEIGHT][MAX], int) = charToFunc[(unsigned char)str[i]];
+    for (int i = 0; i < strLength; i++) {
+        // Get the corresponding function for the character from the table
+        void (*func)(char[HEIGHT][MAX], int) = charToFunc[(unsigned char)str[i]];
 
-		if (func) {
-			// Volání funkce pro přidání znaku
-			func(field, fieldLength);
-		}
+        if (func) {
+            // Call the function to add the character
+            func(field, fieldLength);
+        }
 
-		fieldLength += 8;
-	}
+        fieldLength += 8;
+    }
 }
+
 
 
 void MCUInit(void)
@@ -199,14 +210,16 @@ void init_button_ports()
 }
 
 void display_text(const char *text, int len) {
-    int maxLen = len * 8;
-    int forLoopLimit = maxLen * 2 + 20;
-    char field[HEIGHT][MAX];
-    createString(field, text, len);
+    int maxLen = len * 8; // Calculate the maximum length for the 'field' array based on 'len'.
+    int forLoopLimit = maxLen * 2 + 20; // Determine the limit for the outer loop.
+    char field[HEIGHT][MAX]; // Declare a 2D array 'field' to store the display content.
+    createString(field, text, len); // Call a function to create the 'field' based on 'text' and 'len'.
 
+    // Outer loop to control the animation sequence.
     for (int i = 0; i < forLoopLimit; i++) {
+        // Inner loop for repeating the display content multiple times.
         for (int k = 0; k < 12; k++) {
-            showField(field, maxLen, i);
+            showField(field, maxLen, i); // Call a function to display the 'field' content with a given offset 'i'.
         }
     }
 }
@@ -215,28 +228,28 @@ void display_text(const char *text, int len) {
 
 
 int main(void) {
-    MCUInit();
-    system_config();
-    init_button_ports();
-    char field[HEIGHT][MAX];
-    int maxLen;
-    int forLoopLimit;
-    int strLen;
+    MCUInit();                   // Initialize the microcontroller
+    system_config();             // Configure the system settings
+    init_button_ports();         // Initialize button ports
+    char field[HEIGHT][MAX];      // Declare a character array 'field'
+    int maxLen;                  // Declare a variable 'maxLen'
+    int forLoopLimit;            // Declare a variable 'forLoopLimit'
+    int strLen;                  // Declare a variable 'strLen'
 
-    while (1) {
+    while (1) {                  // Start an infinite loop
         if (!(GPIOE_PDIR & BTN_SW2)) {
-            display_text("XNOVOS14", 8);
+            display_text("XNOVOS14", 8);   // Display "XNOVOS14" when SW2 button is pressed
         } else if (!(GPIOE_PDIR & BTN_SW3)) {
-            display_text("PROJEKT", 7);
+            display_text("PROJEKT1", 8);    // Display "PROJEKT" when SW3 button is pressed
         } else if (!(GPIOE_PDIR & BTN_SW4)) {
-		   display_text("FIT", 3);
+            display_text("FIT", 3);         // Display "FIT" when SW4 button is pressed
         } else if (!(GPIOE_PDIR & BTN_SW5)) {
-            display_text("IMP", 3);
+            display_text("IMP", 3);         // Display "IMP" when SW5 button is pressed
         } else if (!(GPIOE_PDIR & BTN_SW6)) {
-            display_text("0123456", 7);
+            display_text("0123456", 7);     // Display "0123456" when SW6 button is pressed
         }
     }
 
-    // infinity loop
+    // Infinite loop, the program will never reach this point
     return 0;
 }
